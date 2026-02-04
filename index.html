@@ -1,0 +1,3732 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💘 ¿Quieres salir conmigo? 💘</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #ff6b9d 0%, #c44569 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            transition: all 0.8s ease;
+        }
+
+        /* Galería de fotos */
+        .gallery-screen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #ff1744 0%, #ff6b9d 50%, #c44569 100%);
+            z-index: 3000;
+            animation: fadeIn 0.6s ease;
+            overflow-y: auto;
+        }
+
+        .gallery-screen.show {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .gallery-container {
+            position: relative;
+            width: 90%;
+            max-width: 600px;
+            text-align: center;
+            z-index: 3001;
+            padding: 40px 20px;
+        }
+
+        .gallery-title {
+            font-size: 48px;
+            color: white;
+            margin-bottom: 30px;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .gallery-image {
+            width: 100%;
+            height: 500px;
+            border-radius: 20px;
+            background-size: cover;
+            background-position: center;
+            border: 8px solid white;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+            margin-bottom: 30px;
+            animation: slideInPhoto 0.5s ease;
+        }
+
+        .gallery-controls {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .gallery-btn {
+            background: white;
+            color: #c44569;
+            border: none;
+            padding: 12px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .gallery-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .gallery-counter {
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .close-gallery {
+            background: rgba(255, 255, 255, 0.3);
+            color: white;
+            border: 2px solid white;
+            padding: 10px 25px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .close-gallery:hover {
+            background: white;
+            color: #c44569;
+        }
+
+        .gallery-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .gallery-buttons .close-gallery {
+            margin-top: 0;
+        }
+
+        /* Modal 4 dígitos (contraseña → flores.html) */
+        .pin-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 7000;
+        }
+        .pin-overlay.show { display: block; }
+        .pin-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(145deg, #fff5f8, #ffe4ec);
+            padding: 28px;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(196, 69, 105, 0.3);
+            z-index: 7001;
+            border: 2px solid #c44569;
+            min-width: 260px;
+        }
+        .pin-modal.show { display: block; }
+        .pin-modal-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #c44569;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .pin-inputs {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 16px;
+        }
+        .pin-digit {
+            width: 50px;
+            height: 56px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            border: 2px solid #c44569;
+            border-radius: 10px;
+            outline: none;
+        }
+        .pin-digit:focus {
+            border-color: #ff6b9d;
+            box-shadow: 0 0 0 3px rgba(196, 69, 105, 0.2);
+        }
+        .pin-error {
+            min-height: 20px;
+            color: #c44569;
+            font-size: 13px;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+        .pin-submit {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #c44569, #ff6b9d);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .pin-submit:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 12px rgba(196, 69, 105, 0.4);
+        }
+
+        /* Menú de música (arriba derecha) */
+        .music-menu {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            z-index: 3000;
+            background: linear-gradient(145deg, #fff5f8, #ffe4ec);
+            padding: 12px 16px;
+            border-radius: 16px;
+            border: 2px solid #c44569;
+            display: none;
+            align-items: center;
+            gap: 14px;
+            box-shadow: 0 8px 24px rgba(196, 69, 105, 0.35);
+        }
+        .music-menu.show {
+            display: flex;
+        }
+        .music-disc {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #ffffff 0%, #ffe4ec 35%, #ff6b9d 65%, #c44569 100%);
+            position: relative;
+            flex-shrink: 0;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+        .music-disc::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #ffffff;
+            box-shadow: 0 0 4px rgba(0, 0, 0, 0.4);
+        }
+        .music-menu.playing .music-disc {
+            animation: spinDisc 4s linear infinite;
+        }
+        @keyframes spinDisc {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .music-track-info {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            min-width: 0;
+        }
+        .music-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #c44569;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 230px;
+        }
+        .music-progress input[type="range"] {
+            width: 190px;
+            accent-color: #c44569;
+        }
+        .music-controls {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            color: #c44569;
+        }
+        .music-skip-btn {
+            border: none;
+            background: linear-gradient(135deg, #c44569, #ff6b9d);
+            color: #fff;
+            width: 26px;
+            height: 26px;
+            border-radius: 999px;
+            font-size: 14px;
+            line-height: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(196, 69, 105, 0.4);
+        }
+        .music-skip-btn:hover {
+            transform: scale(1.05);
+        }
+
+        @keyframes slideInPhoto {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 60px 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+            position: relative;
+            z-index: 1;
+            animation: slideIn 0.5s ease;
+        }
+
+        .success-screen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #ff1744 0%, #ff6b9d 50%, #c44569 100%);
+            z-index: 2000;
+            animation: fadeIn 0.6s ease;
+        }
+
+        .success-screen.show {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .success-content {
+            text-align: center;
+            color: white;
+            z-index: 2001;
+            animation: zoomIn 0.8s ease;
+        }
+
+        .success-title {
+            font-size: 72px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
+            animation: float 2s ease-in-out infinite;
+        }
+
+        .success-photo {
+            width: 400px;
+            height: 400px;
+            border-radius: 20px;
+            margin: 20px auto;
+            border: 8px solid white;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+            background-size: cover;
+            background-position: center;
+            animation: rotatePhoto 1s ease-in-out infinite;
+        }
+
+        .rose-animation {
+            position: fixed;
+            font-size: 80px;
+            z-index: 1500;
+            animation: fallRose 4s ease-in forwards;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+        }
+
+        h1 {
+            font-size: 48px;
+            color: #ff1744;
+            margin-bottom: 20px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .message {
+            font-size: 32px;
+            color: #c44569;
+            margin: 30px 0;
+            font-weight: bold;
+            line-height: 1.4;
+        }
+
+        .emoji {
+            font-size: 60px;
+            animation: bounce 2s ease-in-out infinite;
+            display: inline-block;
+            margin: 0 10px;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 40px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 15px 40px;
+            font-size: 20px;
+            font-weight: bold;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        #siBtn {
+            background: linear-gradient(135deg, #ff1744, #c44569);
+            color: white;
+            padding: 15px 60px;
+            font-size: 22px;
+        }
+
+        #siBtn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 25px rgba(255, 23, 68, 0.4);
+        }
+
+        #noBtn {
+            background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+            color: white;
+            position: relative;
+        }
+
+        #noBtn:hover,
+        #noBtn:focus {
+            transform: translate(100px, -100px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Pop-up anuncio (arriba izquierda, rosa, 5 segundos) */
+        .ad-popup {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: linear-gradient(135deg, #ff9ec5 0%, #ff6b9d 50%, #ff4081 100%);
+            padding: 16px 20px;
+            border-radius: 12px;
+            box-shadow: 0 6px 24px rgba(255, 64, 129, 0.5);
+            z-index: 6000;
+            max-width: 280px;
+            border: 2px solid #ff1744;
+        }
+        .ad-popup.show {
+            display: block;
+            animation: adBounce 0.4s ease;
+        }
+        @keyframes adBounce {
+            0% { transform: scale(0.8); opacity: 0; }
+            70% { transform: scale(1.05); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .ad-popup-badge {
+            background: #fff;
+            color: #ff4081;
+            font-size: 11px;
+            font-weight: 800;
+            padding: 4px 10px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+        .ad-popup-text {
+            font-size: 15px;
+            font-weight: 700;
+            color: #fff;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+            line-height: 1.3;
+            margin-bottom: 10px;
+        }
+        .ad-popup-cta {
+            background: #fff;
+            color: #ff4081;
+            font-size: 12px;
+            font-weight: 800;
+            padding: 8px 14px;
+            border-radius: 8px;
+            text-align: center;
+            display: inline-block;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        /* Pop-up de notificación */
+        .notification-popup {
+            display: none;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            z-index: 5000;
+            text-align: left;
+            max-width: 380px;
+            animation: slideInRight 0.5s ease;
+            border-left: 4px solid #FF0000;
+        }
+
+        .notification-popup.show {
+            display: block;
+            animation: slideOutRight 0.5s ease forwards 6.5s;
+        }
+
+        .notification-title {
+            font-size: 16px;
+            color: #030303;
+            font-weight: bold;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .notification-link {
+            display: inline-block;
+            background: #FF0000;
+            color: white;
+            padding: 10px 24px;
+            border-radius: 24px;
+            text-decoration: none;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            font-size: 14px;
+            margin-right: 10px;
+        }
+
+        .notification-link:hover {
+            background: #CC0000;
+            box-shadow: 0 4px 12px rgba(255, 0, 0, 0.3);
+        }
+
+        .popup-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            z-index: 4999;
+        }
+
+        .popup-overlay.show {
+            display: block;
+        }
+
+        .close-popup {
+            background: transparent;
+            color: #606060;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 20px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            display: inline-block;
+            margin-left: 10px;
+        }
+
+        .close-popup:hover {
+            background: #f0f0f0;
+            color: #030303;
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(400px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideOutRight {
+            from {
+                opacity: 1;
+                transform: translateX(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateX(400px);
+            }
+        }
+
+        /* Toasts de notificación (WhatsApp / Tinder) */
+        #toastContainer {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 4500;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            pointer-events: none;
+        }
+        .toast-notification {
+            pointer-events: auto;
+            padding: 14px 18px;
+            border-radius: 12px;
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.25);
+            max-width: 320px;
+            animation: toastIn 0.35s ease;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            cursor: pointer;
+        }
+        .toast-notification.toast-whatsapp {
+            background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+            color: white;
+            border-left: 4px solid #128C7E;
+        }
+        .toast-notification.toast-tinder {
+            background: linear-gradient(135deg, #FE3C72 0%, #FF6B6B 100%);
+            color: white;
+            border-left: 4px solid #FE3C72;
+        }
+        .toast-notification .toast-app {
+            font-size: 13px;
+            font-weight: bold;
+            opacity: 0.95;
+        }
+        .toast-notification .toast-body {
+            font-size: 14px;
+            line-height: 1.35;
+        }
+        @keyframes toastIn {
+            from { opacity: 0; transform: translateX(-30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        /* Widget de móvil */
+        .mobile-widget {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 4000;
+        }
+
+        .mobile-toggle {
+            width: 90px;
+            height: 90px;
+            padding: 0;
+            border-radius: 50%;
+            background: white;
+            color: #c44569;
+            border: 2px solid rgba(196, 69, 105, 0.3);
+            font-size: 38px;
+            line-height: 1;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mobile-toggle:hover {
+            transform: scale(1.06);
+            box-shadow: 0 8px 28px rgba(0, 0, 0, 0.2);
+            background: #fff5f8;
+            border-color: #c44569;
+        }
+
+        .mobile-screen {
+            display: none;
+            position: absolute;
+            bottom: 80px;
+            right: 0;
+            width: 380px;
+            height: 680px;
+            background: #111;
+            border-radius: 40px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+            overflow: hidden;
+            border: 12px solid #1a1a1a;
+            animation: popupMobile 0.4s ease;
+            flex-direction: column;
+        }
+
+        .mobile-screen.show {
+            display: flex;
+        }
+
+        .mobile-screen.chat-open {
+            display: flex;
+        }
+
+        /* Barra de estado tipo iPhone/Android */
+        .phone-status-bar {
+            height: 44px;
+            background: rgba(0, 0, 0, 0.4);
+            color: #fff;
+            font-size: 15px;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 24px;
+            flex-shrink: 0;
+            z-index: 10;
+        }
+
+        .phone-status-bar .status-time {
+            letter-spacing: 0.5px;
+        }
+
+        .phone-status-bar .status-icons {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+        }
+
+        /* Pantalla de inicio del móvil */
+        .phone-home-screen {
+            flex: 1;
+            background: linear-gradient(180deg, #2c2c2e 0%, #1c1c1e 100%);
+            display: flex;
+            flex-direction: column;
+            padding: 20px 16px 24px;
+            min-height: 0;
+        }
+
+        .phone-home-wallpaper {
+            position: absolute;
+            top: 44px;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('fotos/amorcito1.jpg') center/cover;
+            background-size: cover;
+            background-position: center;
+            z-index: 0;
+        }
+
+        .phone-apps-grid {
+            position: relative;
+            z-index: 1;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 28px 16px;
+            justify-items: center;
+            align-content: start;
+            padding: 30px 10px 20px;
+            flex: 1;
+        }
+
+        .phone-app-icon-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            position: relative;
+            padding: 12px;
+            border-radius: 22px;
+            transition: transform 0.2s ease, background 0.2s ease;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .phone-app-icon-wrap:hover {
+            transform: scale(1.08);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .phone-app-icon-wrap:active {
+            transform: scale(0.98);
+        }
+
+        .app-badge {
+            position: absolute;
+            top: -4px;
+            right: 50%;
+            transform: translate(50%, 0);
+            min-width: 22px;
+            height: 22px;
+            padding: 0 6px;
+            background: #e53935;
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+            border-radius: 11px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+            z-index: 10;
+        }
+        .app-badge.show {
+            display: flex;
+        }
+        .phone-app-icon-img {
+            width: 64px;
+            height: 64px;
+            border-radius: 16px;
+            object-fit: cover;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .phone-app-icon-label {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.9);
+            text-align: center;
+            max-width: 72px;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .phone-app-icon-fallback {
+            width: 64px;
+            height: 64px;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+        }
+
+        .phone-close-bar {
+            position: relative;
+            z-index: 15;
+            padding: 12px 16px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .phone-close-bar .mobile-close {
+            color: rgba(255, 255, 255, 0.95);
+            font-size: 15px;
+            padding: 10px 28px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+        }
+
+        .phone-close-bar .mobile-close:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        .mobile-header {
+            background: #075E54;
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .mobile-content {
+            flex: 1;
+            background: white;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Vista WhatsApp: fondo blanco para que se vea bien (sin negro) */
+        #whatsappView {
+            background: #fff;
+            flex: 1;
+            min-height: 0;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        #whatsappView #chatListView {
+            background: #fff;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+
+        #whatsappView .chat-conversation {
+            background: #fff;
+        }
+
+        #whatsappView .messages-area {
+            background: #ECE5DD;
+        }
+
+        /* Vista de lista de chats */
+        .chat-list {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-item {
+            padding: 15px;
+            border-bottom: 1px solid #e5e5e5;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .chat-item:hover {
+            background: #f5f5f5;
+        }
+
+        .chat-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            overflow: hidden;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #e0e0e0;
+        }
+
+        .chat-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .chat-avatar-fallback {
+            font-size: 24px;
+        }
+
+        /* Vista de conversación */
+        .chat-conversation {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .chat-conversation.show {
+            display: flex;
+        }
+
+        .chat-header-back {
+            background: #075E54;
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .back-btn {
+            background: transparent;
+            color: white;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        .messages-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+            background: #ECE5DD;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .message {
+            max-width: 80%;
+            padding: 10px 15px;
+            border-radius: 10px;
+            word-wrap: break-word;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        .message.sent {
+            align-self: flex-end;
+            background: #DCF8C6;
+            color: #000;
+            border-bottom-right-radius: 0;
+        }
+
+        .message.received {
+            align-self: flex-start;
+            background: white;
+            color: #000;
+            border-bottom-left-radius: 0;
+            box-shadow: 0 1px 1px rgba(0,0,0,0.1);
+        }
+
+        .message.blocked {
+            align-self: center;
+            background: #f8d7da;
+            color: #721c24;
+            font-size: 12px;
+            border: 1px solid #f5c6cb;
+        }
+
+        .input-area {
+            display: flex;
+            gap: 10px;
+            padding: 12px;
+            background: white;
+            border-top: 1px solid #e5e5e5;
+        }
+
+        .chat-blocked-notice {
+            display: none;
+            padding: 12px 15px;
+            background: #f8d7da;
+            color: #721c24;
+            text-align: center;
+            font-size: 13px;
+            border-top: 1px solid #f5c6cb;
+        }
+
+        .chat-blocked-notice.show {
+            display: block;
+        }
+
+        .input-area.hidden-when-blocked {
+            display: none;
+        }
+
+        .chat-input {
+            flex: 1;
+            border: 1px solid #ccc;
+            border-radius: 20px;
+            padding: 10px 15px;
+            font-size: 13px;
+            outline: none;
+            font-family: inherit;
+        }
+
+        .send-btn {
+            background: #075E54;
+            color: white;
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            transition: all 0.3s ease;
+        }
+
+        .send-btn:hover {
+            background: #128C7E;
+        }
+
+        .chat-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #FF6B9D, #C44569);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .chat-info {
+            flex: 1;
+        }
+
+        .chat-name {
+            font-weight: bold;
+            color: #000;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .chat-message {
+            color: #999;
+            font-size: 12px;
+        }
+
+        .mobile-close {
+            background: transparent;
+            color: white;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .mobile-close:hover {
+            opacity: 0.7;
+        }
+
+        /* Apps Menu (vista home del móvil) */
+        .apps-menu {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            overflow: hidden;
+            background: transparent;
+        }
+
+        /* Tinder Hack Message */
+        .tinder-view {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+            background: linear-gradient(135deg, #FF006E, #FB5607);
+        }
+
+        .tinder-view.show {
+            display: flex;
+        }
+
+        .tinder-header {
+            background: rgba(0, 0, 0, 0.3);
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .tinder-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            position: relative;
+        }
+
+        .tinder-card-stack {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            max-width: 320px;
+            max-height: 420px;
+        }
+
+        .tinder-card {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            cursor: grab;
+            user-select: none;
+            touch-action: none;
+            transition: transform 0.1s ease-out, opacity 0.1s ease-out;
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+        }
+
+        .tinder-card.dragging {
+            transition: none;
+            z-index: 10;
+        }
+
+        .tinder-card.like {
+            animation: cardLike 0.6s ease-out forwards;
+        }
+
+        .tinder-card.reject {
+            animation: cardReject 0.6s ease-out forwards;
+        }
+
+        @keyframes cardLike {
+            to {
+                transform: translateX(150%) rotate(20deg);
+                opacity: 0;
+            }
+        }
+
+        @keyframes cardReject {
+            to {
+                transform: translateX(-150%) rotate(-20deg);
+                opacity: 0;
+            }
+        }
+
+        .tinder-card-info {
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+            padding: 20px;
+            color: white;
+        }
+
+        .tinder-card-name {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .tinder-card-age {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .tinder-actions {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .tinder-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: none;
+            font-size: 30px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .tinder-reject {
+            background: white;
+            color: #999;
+        }
+
+        .tinder-reject:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+        }
+
+        .tinder-like {
+            background: white;
+            color: #FF006E;
+        }
+
+        .tinder-like:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 16px rgba(255, 0, 110, 0.4);
+        }
+
+        .tinder-empty {
+            color: white;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        /* Tinder Match Modal */
+        .tinder-match-modal {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 100;
+            animation: matchPop 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            background: rgba(255, 0, 110, 0.1);
+            backdrop-filter: blur(5px);
+            border-radius: 20px;
+            padding: 40px;
+            width: 90%;
+            max-width: 280px;
+        }
+
+        .tinder-match-modal.show {
+            display: block;
+        }
+
+        .tinder-match-content {
+            text-align: center;
+            color: white;
+        }
+
+        .tinder-match-text {
+            font-size: 48px;
+            font-weight: bold;
+            color: #FF006E;
+            margin-bottom: 15px;
+            text-shadow: 0 0 20px rgba(255, 0, 110, 0.6);
+            letter-spacing: 2px;
+        }
+
+        .tinder-match-heart {
+            font-size: 80px;
+            animation: heartBeat 0.6s ease infinite;
+            margin: 15px 0;
+        }
+
+        .tinder-match-message {
+            font-size: 18px;
+            color: white;
+            font-weight: 500;
+        }
+
+        @keyframes fadeInMatch {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes matchPop {
+            0% {
+                transform: translate(-50%, -50%) scale(0.3);
+                opacity: 0;
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.1);
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes heartBeat {
+            0%, 100% {
+                transform: scale(1);
+            }
+            25% {
+                transform: scale(1.3);
+            }
+            50% {
+                transform: scale(1);
+            }
+        }
+
+        @keyframes hackGlitch {
+            0% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            100% { transform: translateX(0); }
+        }
+
+        /* Gallery View */
+        .gallery-view {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+            background: white;
+        }
+
+        .gallery-view.show {
+            display: flex;
+        }
+
+        .gallery-header {
+            background: #333;
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .gallery-content {
+            flex: 1;
+            overflow-y: auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            padding: 10px;
+            background: #f5f5f5;
+        }
+
+        .gallery-item {
+            aspect-ratio: 1;
+            background: #ddd;
+            border-radius: 10px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .gallery-item:hover {
+            transform: scale(1.05);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Carpetas en galería del móvil: bonitas y redondeadas */
+        .gallery-content.gallery-folders {
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            padding: 10px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .gallery-carpeta {
+            width: 100%;
+            max-width: 80px;
+            justify-self: center;
+            aspect-ratio: 1;
+            background: linear-gradient(165deg, #fff9e6 0%, #ffecb3 30%, #ffdf80 70%, #ffd54f 100%);
+            border: none;
+            border-radius: 18px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 4px 12px rgba(255, 193, 7, 0.35), 0 2px 4px rgba(0,0,0,0.06);
+            position: relative;
+            overflow: hidden;
+        }
+        .gallery-carpeta::before {
+            content: '';
+            position: absolute;
+            top: -20%;
+            right: -20%;
+            width: 55%;
+            height: 55%;
+            background: radial-gradient(circle, rgba(255,255,255,0.5) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        .gallery-carpeta:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 16px rgba(255, 193, 7, 0.45), 0 3px 8px rgba(0,0,0,0.08);
+        }
+        .gallery-carpeta:active {
+            transform: scale(0.98);
+            box-shadow: 0 2px 8px rgba(255, 193, 7, 0.3);
+        }
+        .gallery-carpeta-icon {
+            width: 30px;
+            height: 30px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            flex-shrink: 0;
+            position: relative;
+            z-index: 1;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+        .gallery-carpeta-name {
+            font-size: 11px;
+            font-weight: 600;
+            color: #8b6914;
+            line-height: 1.2;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+            letter-spacing: 0.02em;
+        }
+
+        /* JimoGPT View */
+        .chatgpt-view {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+            background: #0d0d0d;
+        }
+
+        .chatgpt-view.show {
+            display: flex;
+        }
+
+        .chatgpt-header {
+            background: linear-gradient(90deg, #1a1a2e 0%, #16213e 100%);
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            border-bottom: 1px solid #333;
+        }
+
+        .chatgpt-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            overflow-y: auto;
+            background: #0d0d0d;
+        }
+
+        .chatgpt-message {
+            background: #1e1e2e;
+            color: #e4e4e7;
+            padding: 14px 18px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            max-width: 90%;
+            align-self: flex-start;
+            font-size: 14px;
+            line-height: 1.5;
+            border: 1px solid #2d2d3d;
+        }
+
+        .chatgpt-message:first-child {
+            font-weight: bold;
+            color: #a78bfa;
+        }
+
+        /* Notas View */
+        .notes-view {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+            background: #fff;
+        }
+
+        .notes-view.show {
+            display: flex;
+        }
+
+        .notes-header {
+            background: #ffd54f;
+            color: #333;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            border-bottom: 1px solid #ffca28;
+        }
+
+        .notes-list {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            background: #fff;
+        }
+
+        .note-item {
+            padding: 15px;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .note-item:hover {
+            background: #f9f9f9;
+        }
+
+        .note-item-title {
+            font-weight: 600;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .note-item-preview {
+            color: #999;
+            font-size: 12px;
+            line-height: 1.3;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+        /* Detalle de Nota */
+        .note-detail-view {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+            background: #fff;
+        }
+
+        .note-detail-view.show {
+            display: flex;
+        }
+
+        .note-detail-header {
+            background: #ffd54f;
+            color: #333;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            border-bottom: 1px solid #ffca28;
+        }
+
+        .note-detail-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #333;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        /* JimoKing View */
+        .jimoking-view {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+            background: #fff;
+        }
+
+        .jimoking-view.show {
+            display: flex;
+        }
+
+        .jimoking-header {
+            background: linear-gradient(90deg, #FFC72C 0%, #FF6600 100%);
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            border-bottom: 1px solid #FF6600;
+            font-size: 18px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        }
+
+        .jimoking-content {
+            flex: 1;
+            overflow-y: auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            padding: 12px;
+            background: #fff;
+        }
+
+        .burger-item {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            border: 2px solid #FFE5CC;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .burger-item:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(255, 102, 0, 0.3);
+        }
+
+        .burger-item-image {
+            width: 100%;
+            height: 120px;
+            background: linear-gradient(135deg, #FFC72C 0%, #FF6600 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+        }
+
+        .burger-item-name {
+            padding: 10px;
+            font-weight: bold;
+            color: #333;
+            font-size: 13px;
+            text-align: center;
+        }
+
+        .burger-item-price {
+            padding: 0 10px 10px;
+            color: #FF6600;
+            font-weight: bold;
+            text-align: center;
+            font-size: 12px;
+        }
+
+        /* Burger Detail View */
+        .burger-detail-view {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+            background: #fff;
+        }
+
+        .burger-detail-view.show {
+            display: flex;
+        }
+
+        .burger-detail-header {
+            background: linear-gradient(90deg, #FFC72C 0%, #FF6600 100%);
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            border-bottom: 1px solid #FF6600;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        }
+
+        .burger-detail-content {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        .burger-detail-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, #FFC72C 0%, #FF6600 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 80px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(255, 102, 0, 0.3);
+        }
+
+        .burger-detail-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .burger-price {
+            font-size: 24px;
+            font-weight: bold;
+            color: #FF6600;
+            text-align: center;
+        }
+
+        .burger-description {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .burger-order-btn {
+            background: linear-gradient(135deg, #FFC72C 0%, #FF6600 100%);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 4px 12px rgba(255, 102, 0, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .burger-order-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 16px rgba(255, 102, 0, 0.4);
+        }
+
+        .burger-order-btn:active {
+            transform: scale(0.98);
+        }
+
+        @keyframes popupMobile {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @media (max-width: 500px) {
+            .mobile-screen {
+                width: 90vw;
+                right: -50%;
+                transform: translateX(50%);
+            }
+        }
+
+        /* Pantalla del juego */
+        .game-screen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #ff6b9d 0%, #c44569 100%);
+            z-index: 2500;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .game-screen.show {
+            display: flex;
+        }
+
+        .game-message {
+            font-size: 40px;
+            color: white;
+            font-weight: bold;
+            margin-bottom: 40px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            animation: float 2s ease-in-out infinite;
+        }
+
+        .game-container {
+            background: white;
+            width: 90%;
+            max-width: 800px;
+            height: 400px;
+            border-radius: 20px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .game-ground {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 60px;
+            background: #ccc;
+            border-top: 3px solid #999;
+        }
+
+        .player {
+            position: absolute;
+            bottom: 65px;
+            left: 50px;
+            width: 50px;
+            height: 85px;
+            background: transparent;
+            z-index: 10;
+            transition: none;
+        }
+        .stick-head {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            overflow: hidden;
+            background: #333;
+            border: 2px solid #222;
+        }
+        .player-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .stick-body {
+            position: absolute;
+            top: 34px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 3px;
+            height: 28px;
+            background: #222;
+            border-radius: 1px;
+        }
+        .stick-arm {
+            position: absolute;
+            top: 38px;
+            width: 3px;
+            height: 20px;
+            background: #222;
+            border-radius: 1px;
+            transform-origin: top center;
+        }
+        .stick-arm-left {
+            left: 12px;
+            transform: rotate(-35deg);
+        }
+        .stick-arm-right {
+            right: 12px;
+            left: auto;
+            transform: rotate(35deg);
+        }
+        .stick-leg {
+            position: absolute;
+            top: 60px;
+            width: 3px;
+            height: 22px;
+            background: #222;
+            border-radius: 1px;
+            transform-origin: top center;
+        }
+        .stick-leg-left {
+            left: 18px;
+            transform: rotate(25deg);
+        }
+        .stick-leg-right {
+            right: 18px;
+            left: auto;
+            transform: rotate(-25deg);
+        }
+
+        .obstacle {
+            position: absolute;
+            bottom: 60px;
+            width: 30px;
+            height: 50px;
+            background: #c44569;
+            border-radius: 3px;
+        }
+
+        .game-score {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .game-over-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 30px 50px;
+            border-radius: 10px;
+            text-align: center;
+            z-index: 100;
+            display: none;
+        }
+
+        .game-over-text.show {
+            display: block;
+        }
+
+        .game-over-title {
+            font-size: 32px;
+            margin-bottom: 15px;
+        }
+
+        .game-over-score {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .game-restart-btn {
+            background: #ff6b9d;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 16px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .game-restart-btn:hover {
+            background: #c44569;
+            transform: scale(1.05);
+        }
+
+        .instruction {
+            color: white;
+            font-size: 18px;
+            margin-top: 20px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .back-from-game-btn {
+            display: block;
+            margin: 24px auto 0;
+            background: rgba(255, 255, 255, 0.95);
+            color: #c44569;
+            border: 2px solid white;
+            padding: 12px 28px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .back-from-game-btn:hover {
+            background: white;
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Animaciones */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
+        @keyframes heartFall {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        @keyframes fallRose {
+            0% {
+                transform: translateY(-100px) rotateZ(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotateZ(360deg);
+                opacity: 0;
+            }
+        }
+
+        @keyframes photoZoom {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes slideIn {
+            0% {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        @keyframes zoomIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.5);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes rotatePhoto {
+            0%, 100% { transform: rotateY(0deg); }
+            50% { transform: rotateY(5deg); }
+        }
+
+        .heart {
+            position: fixed;
+            font-size: 40px;
+            pointer-events: none;
+            animation: heartFall 3s ease-in forwards;
+        }
+
+        .success-message {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 48px;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            animation: float 2s ease-in-out;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        .confetti {
+            position: fixed;
+            pointer-events: none;
+        }
+
+        .secondary-message {
+            font-size: 28px;
+            color: white;
+            margin-top: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .history-btn {
+            background: white;
+            color: #c44569;
+            border: none;
+            padding: 15px 40px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            margin-top: 30px;
+        }
+
+        .history-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Foto que asoma como animal de la cueva (izquierda, foto tal cual) */
+        .cave-photo-wrap {
+            position: fixed;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 9998;
+            pointer-events: none;
+            visibility: hidden;
+        }
+        .cave-photo-wrap.run {
+            visibility: visible;
+            animation: cavePeekOut 5s forwards;
+        }
+        @keyframes cavePeekOut {
+            0% {
+                transform: translateY(-50%) translateX(-100%);
+                opacity: 0;
+            }
+            50% {
+                opacity: 0.4;
+            }
+            70% {
+                transform: translateY(-50%) translateX(0);
+                opacity: 1;
+            }
+            75%, 78% {
+                transform: translateY(-50%) translateX(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-50%) translateX(-100%);
+                opacity: 0;
+            }
+        }
+        .cave-photo-wrap img {
+            max-width: 200px;
+            max-height: 280px;
+            width: auto;
+            height: auto;
+            display: block;
+            object-fit: contain;
+        }
+    </style>
+</head>
+<body>
+    <!-- Foto que asoma por la izquierda (como animal de la cueva) -->
+    <div class="cave-photo-wrap" id="cavePhotoWrap">
+        <img src="fotos/tiburon.png" alt="">
+    </div>
+
+    <!-- Pantalla del juego -->
+    <div class="game-screen" id="gameScreen">
+        <div class="game-message">Veo que te lo estás pensando mucho</div>
+        <div class="game-container">
+            <div class="game-score">Score: <span id="gameScore">0</span></div>
+            <div class="player" id="player">
+                <div class="stick-head"><img src="fotos/Captura.PNG" alt="Jugador" class="player-img"></div>
+                <div class="stick-body"></div>
+                <div class="stick-arm stick-arm-left"></div>
+                <div class="stick-arm stick-arm-right"></div>
+                <div class="stick-leg stick-leg-left"></div>
+                <div class="stick-leg stick-leg-right"></div>
+            </div>
+            <div class="game-ground"></div>
+            <div class="game-over-text" id="gameOver">
+                <div class="game-over-title">¡GAME OVER!</div>
+                <div class="game-over-score">Score: <span id="finalScore">0</span></div>
+                <button class="game-restart-btn" id="restartBtn">Reiniciar</button>
+            </div>
+        </div>
+        <div class="instruction">Usa la BARRA ESPACIADORA para saltar</div>
+        <button class="back-from-game-btn" id="backFromGameBtn">Ya me lo he pensado bien</button>
+    </div>
+
+    <div class="container" id="mainContainer">
+        <h1>Quiero ser mi novia?</h1>
+    
+        <div class="buttons">
+            <button id="siBtn"> SÍ</button>
+            <button id="noBtn">No</button>
+        </div>
+    </div>
+
+    <!-- Pantalla de éxito -->
+    <div class="success-screen" id="successScreen">
+        <div class="success-content">
+            <div class="success-title">✨ ¡Buena Elección! ✨</div>
+            <div class="success-photo" id="successPhoto"></div>
+            <div class="secondary-message">¡Eres la persona más especial del mundo! 💕</div>
+            <div class="secondary-message">¡Te amo! 💑</div>
+            <button class="history-btn" id="historyBtn">Conocer nuestra historia</button>
+        </div>
+    </div>
+
+    <!-- Galería de fotos -->
+    <div class="gallery-screen" id="galleryScreen">
+        <div class="gallery-container">
+            <div class="gallery-title">📸 Nuestra Historia 📸</div>
+            <div class="gallery-image" id="galleryImage"></div>
+            <div class="gallery-controls">
+                <button class="gallery-btn" id="prevBtn">⬅ Anterior</button>
+                <div class="gallery-counter"><span id="currentPhoto">1</span> / <span id="totalPhotos">0</span></div>
+                <button class="gallery-btn" id="nextBtn">Siguiente ➡</button>
+            </div>
+            <div class="gallery-buttons">
+                <button class="close-gallery presiona-aqui-btn" id="presionaAquiBtn">Presiona aquí</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal contraseña 4 dígitos (lleva a flores.html) -->
+    <div class="pin-overlay" id="pinOverlay"></div>
+    <div class="pin-modal" id="pinModal">
+        <div class="pin-modal-title">Introduce los 4 dígitos</div>
+        <div class="pin-inputs" id="pinInputs">
+            <input type="password" inputmode="numeric" maxlength="1" class="pin-digit" id="pin0" autocomplete="off">
+            <input type="password" inputmode="numeric" maxlength="1" class="pin-digit" id="pin1" autocomplete="off">
+            <input type="password" inputmode="numeric" maxlength="1" class="pin-digit" id="pin2" autocomplete="off">
+            <input type="password" inputmode="numeric" maxlength="1" class="pin-digit" id="pin3" autocomplete="off">
+        </div>
+        <div class="pin-error" id="pinError"></div>
+        <button type="button" class="pin-submit" id="pinSubmit">Entrar</button>
+    </div>
+
+    <!-- Menú de música (arriba derecha) -->
+    <div class="music-menu" id="musicMenu">
+        <div class="music-disc" id="musicDisc"></div>
+        <div class="music-track-info">
+            <div class="music-title" id="musicTitle">Los Burlaos X Better Off Alone</div>
+            <div class="music-progress">
+                <input type="range" id="musicProgress" min="0" max="100" value="0">
+            </div>
+            <div class="music-controls">
+                <button type="button" class="music-skip-btn" id="musicPrev">⏮</button>
+                <button type="button" class="music-skip-btn" id="musicPlayPause">▶</button>
+                <button type="button" class="music-skip-btn" id="musicNext">⏭</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pop-up anuncio (al pulsar SÍ) -->
+    <div class="ad-popup" id="adPopup">
+        <div class="ad-popup-badge">¡OFERTA!</div>
+        <div class="ad-popup-text">¡Condones a 50% de descuento! Aprovecha</div>
+        <div class="ad-popup-cta">COMPRAR YA →</div>
+    </div>
+
+    <!-- Pop-up de notificación -->
+    <div class="popup-overlay" id="popupOverlay"></div>
+    <div class="notification-popup" id="notificationPopup">
+        <div class="notification-title">� Auronplay ha subido un nuevo vídeo</div>
+        <div style="margin-top: 15px;">
+            <a href="https://www.youtube.com" target="_blank" class="notification-link">VER</a>
+            <button class="close-popup" id="closePopupBtn">✕</button>
+        </div>
+    </div>
+    <!-- Widget de móvil -->
+    <div class="mobile-widget">
+        <button class="mobile-toggle" id="mobileToggle" aria-label="Abrir móvil"><i class="fa-solid fa-mobile-screen-button"></i></button>
+        <div�        <div class="mobile-screen" id="mobileScreen">
+            <!-- Pantalla de inicio del móvil (como un móvil real) -->
+            <div class="apps-menu" id="appsMenu">
+                <div class="phone-status-bar">
+                    <span class="status-time" id="phoneTime">9:41</span>
+                    <div class="status-icons">
+                        <span>📶</span>
+                        <span>📡</span>
+                        <span>🔋</span>
+                    </div>
+                </div>
+                <div class="phone-home-wallpaper"></div>
+                <div class="phone-home-screen">
+                    <div class="phone-apps-grid">
+                        <div class="phone-app-icon-wrap" id="tinder-app" title="Tinder">
+                            <img class="phone-app-icon-img" id="icon-tinder" src="iconos/Tinder.png" alt="Tinder" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <span class="phone-app-icon-fallback" style="display: none;">🔥</span>
+                            <span class="phone-app-icon-label">Tinder</span>
+                        </div>
+                        <div class="phone-app-icon-wrap" id="whatsapp-app" title="WhatsApp">
+                            <span class="app-badge" id="whatsappBadge">1</span>
+                            <img class="phone-app-icon-img" id="icon-whatsapp" src="iconos/whatsapp.png" alt="WhatsApp" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <span class="phone-app-icon-fallback" style="display: none;">💬</span>
+                            <span class="phone-app-icon-label">WhatsApp</span>
+                        </div>
+                        <div class="phone-app-icon-wrap" id="gallery-app" title="Galería">
+                            <img class="phone-app-icon-img" id="icon-galeria" src="iconos/Galeria.png" alt="Galería" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <span class="phone-app-icon-fallback" style="display: none;">🖼️</span>
+                            <span class="phone-app-icon-label">Galería</span>
+                        </div>
+                        <div class="phone-app-icon-wrap" id="chatgpt-app" title="JimoGPT">
+                            <img class="phone-app-icon-img" id="icon-chatgpt" src="iconos/JimoGPT.png" alt="JimoGPT" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <span class="phone-app-icon-fallback" style="display: none;">🤖</span>
+                            <span class="phone-app-icon-label">JimoGPT</span>
+                        </div>
+                        <div class="phone-app-icon-wrap" id="notes-app" title="Notas">
+                            <img class="phone-app-icon-img" id="icon-notes" src="iconos/Notas.png" alt="Notas" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <span class="phone-app-icon-fallback" style="display: none;">📝</span>
+                            <span class="phone-app-icon-label">Notas</span>
+                        </div>
+                        <div class="phone-app-icon-wrap" id="jimoking-app" title="JimoKing">
+                            <img class="phone-app-icon-img" id="icon-jimoking" src="iconos/JimoKing.png" alt="JimoKing" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <span class="phone-app-icon-fallback" style="display: none;">🍔</span>
+                            <span class="phone-app-icon-label">JimoKing</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="phone-close-bar">
+                    <button class="mobile-close" id="mobileClose">Cerrar</button>
+                </div>
+            </div>
+
+            <!-- Vista Tinder (Hackeada) -->
+            <div class="tinder-view" id="tinderView">
+                <div class="tinder-header">
+                    <span>Tinder</span>
+                    <button class="back-btn" id="backFromTinder" style="color: white;">←</button>
+                </div>
+                <div class="tinder-content" id="tinderContent">
+                    <div class="tinder-card-stack" id="tinderCardStack">
+                        <!-- Las tarjetas se cargarán aquí dinámicamente -->
+                    </div>
+                    <!-- Match dentro de la aplicación -->
+                    <div class="tinder-match-modal" id="tinderMatchModal">
+                        <div class="tinder-match-content">
+                            <div class="tinder-match-text">¡ES UN MATCH!</div>
+                            <div class="tinder-match-heart">❤️</div>
+                            <div class="tinder-match-message">¡Conexión encontrada!</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tinder-actions">
+                    <button class="tinder-btn tinder-reject" id="tinderRejectBtn" title="Pasar">✕</button>
+                    <button class="tinder-btn tinder-like" id="tinderLikeBtn" title="Like">❤️</button>
+                </div>
+            </div>
+
+            <div id="whatsappView">
+                <div id="chatListView">
+                    <div class="mobile-header">
+                        <span>WhatsApp</span>
+                        <button class="back-btn" id="backFromWhatsApp">←</button>
+                    </div>
+                    <div class="mobile-content chat-list">
+                        <div class="chat-item" id="openChatBtn">
+                            <div class="chat-avatar">
+                                <img src="fotos/Foton1.png" alt="Amorcito" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                <span class="chat-avatar-fallback" style="display: none;">💕</span>
+                            </div>
+                            <div class="chat-info">
+                                <div class="chat-name">Amorcito 💙</div>
+                                <div class="chat-message">Tu: Eres mucho mejor que ian</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chat-conversation" id="chatConversation">
+                    <div class="chat-header-back">
+                        <button class="back-btn" id="backBtn">←</button>
+                        <span>Amorcito 💙</span>
+                        <div style="width: 24px;"></div>
+                    </div>
+                    <div class="messages-area" id="messagesArea"></div>
+                    <div class="input-area" id="chatInputArea">
+                        <input type="text" class="chat-input" id="chatInput" placeholder="Escribe un mensaje...">
+                        <button class="send-btn" id="sendBtn">➤</button>
+                    </div>
+                    <div class="chat-blocked-notice" id="chatBlockedNotice">Este usuario te ha bloqueado</div>
+                </div>
+            </div>
+
+            <!-- Vista Galería -->
+            <div class="gallery-view" id="galleryView">
+                <div class="gallery-header">
+                    <span>Galería</span>
+                    <button class="back-btn" id="backFromGallery" style="color: white;">←</button>
+                </div>
+                <div class="gallery-content" id="galleryContent">
+                    <!-- Las fotos se cargarán aquí dinámicamente -->
+                </div>
+            </div>
+
+            <!-- Vista JimoGPT -->
+            <div class="chatgpt-view" id="chatgptView">
+                <div class="chatgpt-header">
+                    <span>JimoGPT</span>
+                    <button class="back-btn" id="backFromChatGPT" style="color: white;">←</button>
+                </div>
+                <div class="chatgpt-content" id="chatgptContent"></div>
+            </div>
+
+            <!-- Vista Notas -->
+            <div class="notes-view" id="notesView">
+                <div class="notes-header">
+                    <span>Notas</span>
+                    <button class="back-btn" id="backFromNotes" style="color: white;">←</button>
+                </div>
+                <div class="notes-list" id="notesList">
+                    <!-- Las notas se cargarán aquí dinámicamente -->
+                </div>
+            </div>
+
+            <!-- Vista Detalle de Nota -->
+            <div class="note-detail-view" id="noteDetailView">
+                <div class="note-detail-header">
+                    <button class="back-btn" id="backFromNoteDetail" style="color: white;">←</button>
+                    <span id="noteDetailTitle">Nota</span>
+                    <span></span>
+                </div>
+                <div class="note-detail-content" id="noteDetailContent"></div>
+            </div>
+
+            <!-- Vista JimoKing -->
+            <div class="jimoking-view" id="jimokingView">
+                <div class="jimoking-header">
+                    <span>JimoKing</span>
+                    <button class="back-btn" id="backFromJimoKing" style="color: white;">←</button>
+                </div>
+                <div class="jimoking-content" id="jimokingContent">
+                    <!-- Las hamburguesas se cargarán aquí dinámicamente -->
+                </div>
+            </div>
+
+            <!-- Vista Detalle Hamburguesa -->
+            <div class="burger-detail-view" id="burgerDetailView">
+                <div class="burger-detail-header">
+                    <button class="back-btn" id="backFromBurgerDetail" style="color: white;">←</button>
+                    <span id="burgerDetailTitle">Hamburguesa</span>
+                    <span></span>
+                </div>
+                <div class="burger-detail-content">
+                    <div class="burger-detail-image" id="burgerDetailImage"></div>
+                    <div class="burger-detail-info">
+                        <div class="burger-price">GRATIS</div>
+                        <div class="burger-description" id="burgerDetailDesc"></div>
+                        <button class="burger-order-btn" id="burgerOrderBtn">Pedir Ahora</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Foto que asoma por la derecha (como animal de la cueva) - en cualquier momento
+        (function cavePhotoSchedule() {
+            var wrap = document.getElementById('cavePhotoWrap');
+            if (!wrap) return;
+            function runCavePhoto() {
+                wrap.classList.remove('run');
+                wrap.offsetHeight;
+                wrap.classList.add('run');
+                setTimeout(function() {
+                    wrap.classList.remove('run');
+                    setTimeout(cavePhotoSchedule, (8 + Math.random() * 22) * 1000);
+                }, 5200);
+            }
+            setTimeout(runCavePhoto, (5 + Math.random() * 20) * 1000);
+        })();
+
+        const noBtn = document.getElementById('noBtn');
+        const siBtn = document.getElementById('siBtn');
+        const successScreen = document.getElementById('successScreen');
+        const mainContainer = document.getElementById('mainContainer');
+        const galleryScreen = document.getElementById('galleryScreen');
+        const historyBtn = document.getElementById('historyBtn');
+        const closeGalleryBtn = document.getElementById('closeGalleryBtn');
+        const galleryImage = document.getElementById('galleryImage');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const currentPhotoSpan = document.getElementById('currentPhoto');
+        const totalPhotosSpan = document.getElementById('totalPhotos');
+        const notificationPopup = document.getElementById('notificationPopup');
+        const popupOverlay = document.getElementById('popupOverlay');
+        const closePopupBtn = document.getElementById('closePopupBtn');
+        const mobileToggle = document.getElementById('mobileToggle');
+        const mobileScreen = document.getElementById('mobileScreen');
+        const mobileClose = document.getElementById('mobileClose');
+        const chatListView = document.getElementById('chatListView');
+        const chatConversation = document.getElementById('chatConversation');
+        const openChatBtn = document.getElementById('openChatBtn');
+        const backBtn = document.getElementById('backBtn');
+        const messagesArea = document.getElementById('messagesArea');
+        const chatInput = document.getElementById('chatInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const gameScreen = document.getElementById('gameScreen');
+        const gameScore = document.getElementById('gameScore');
+        const gameOver = document.getElementById('gameOver');
+        const finalScore = document.getElementById('finalScore');
+        const restartBtn = document.getElementById('restartBtn');
+        const player = document.getElementById('player');
+
+        // Sonido de notificación (estilo WhatsApp): MP3 o doble tono de fallback
+        const notificationSound = new Audio('musica/notificacion.mp3');
+        function playNotificationSound() {
+            notificationSound.currentTime = 0;
+            notificationSound.play().catch(function() {
+                try {
+                    var ctx = new (window.AudioContext || window.webkitAudioContext)();
+                    var t = ctx.currentTime;
+                    [523.25, 659.25].forEach(function(freq, i) {
+                        var o = ctx.createOscillator();
+                        var g = ctx.createGain();
+                        o.connect(g);
+                        g.connect(ctx.destination);
+                        o.frequency.value = freq;
+                        o.type = 'sine';
+                        g.gain.setValueAtTime(0.15, t);
+                        g.gain.exponentialRampToValueAtTime(0.01, t + 0.12);
+                        o.start(t + i * 0.15);
+                        o.stop(t + i * 0.15 + 0.12);
+                    });
+                } catch (e) {}
+            });
+        }
+
+        // Notificación dentro de la web: sonido + badge en el móvil (sin pedir permiso)
+        let notificationBadgeCount = 0;
+        const originalTitle = document.title;
+        function updateDocTitle() {
+            document.title = notificationBadgeCount > 0 ? '(' + notificationBadgeCount + ') ' + originalTitle : originalTitle;
+        }
+        function updatePhoneBadge() {
+            const badge = document.getElementById('whatsappBadge');
+            if (!badge) return;
+            if (notificationBadgeCount > 0) {
+                badge.textContent = notificationBadgeCount > 99 ? '99+' : (notificationBadgeCount === 1 ? '1' : '+' + notificationBadgeCount);
+                badge.classList.add('show');
+            } else {
+                badge.classList.remove('show');
+            }
+        }
+        window.addEventListener('focus', function() {
+            if (notificationBadgeCount > 0) {
+                notificationBadgeCount = 0;
+                updateDocTitle();
+                updatePhoneBadge();
+            }
+        });
+
+        // Variables del juego
+        let gameStartTime = null;
+        let gameActive = false;
+        let gameTimeout = null;
+        let playerY = 0;
+        let playerVelocity = 0;
+        const gravity = 0.5;
+        const jumpPower = 12;
+        let score = 0;
+        let isJumping = false;
+        let gameRunning = false;
+        let gameLoopId = null;
+
+        // Sonidos del juego
+        const jumpSound = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAAB9AAACABAAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj==');
+        const deathSound = new Audio('data:audio/wav;base64,UklGRi4GAABXQVZFZm10IBAAAAABAAEAQB8AAABkAAACEABZAQACABAAZGF0YQoGAACAgICAgICA');
+
+        // Mensajes automáticos a recibir
+        const autoMessages = [
+            'Que haces pedorra',
+            'Estoy estudiando no puedo ahora',
+            'Me he depilado los cojones'
+        ];
+        let messageIndex = 0;
+        let isChatOpen = false;
+
+        // Notificaciones de WhatsApp y Tinder (de vez en cuando)
+        const whatsappToasts = [
+            { app: 'WhatsApp', title: 'Amorcito', body: '¡Mira qué foto! 📸' },
+            { app: 'WhatsApp', title: 'Amorcito', body: '¿Qué tal va todo?' },
+            { app: 'WhatsApp', title: 'Amorcito', body: 'Te echo de menos 💕' }
+        ];
+        const tinderToasts = [
+            { app: 'Tinder', title: 'Tinder', body: 'Tienes un nuevo like' },
+            { app: 'Tinder', title: 'Tinder', body: 'Alguien te ha dado like' },
+            { app: 'Tinder', title: 'Tinder', body: '¡Es un match! 💕' }
+        ];
+        function showAppToast() {
+            if (mainContainer.style.display === 'none') return;
+            playNotificationSound();
+            notificationBadgeCount++;
+            updateDocTitle();
+            updatePhoneBadge();
+            scheduleNextToast();
+        }
+        function scheduleNextToast() {
+            var sec = 6000 + Math.random() * 9000;
+            setTimeout(showAppToast, sec);
+        }
+
+        // Mostrar pop-up al cargar la página
+        window.addEventListener('load', function() {
+            scheduleNextToast();
+
+            // Iniciar temporizador del juego solo si no ha dado a SÍ
+            gameTimeout = setTimeout(() => {
+                // Solo inicia el juego si mainContainer está visible (no han dado a SÍ)
+                if (mainContainer.style.display !== 'none') {
+                    startGame();
+                }
+            }, 8000);
+        });
+
+        // Cerrar pop-up manualmente
+        closePopupBtn.addEventListener('click', function() {
+            notificationPopup.classList.remove('show');
+            popupOverlay.classList.remove('show');
+        });
+
+        // Cerrar pop-up al hacer click en el overlay
+        popupOverlay.addEventListener('click', function() {
+            notificationPopup.classList.remove('show');
+            popupOverlay.classList.remove('show');
+        });
+
+        // EVENTOS DEL MÓVIL CON MENÚ DE APPS
+        const appsMenu = document.getElementById('appsMenu');
+        const tinderView = document.getElementById('tinderView');
+        const whatsappView = document.getElementById('whatsappView');
+        const galleryView = document.getElementById('galleryView');
+        const chatgptView = document.getElementById('chatgptView');
+        const galleryContent = document.getElementById('galleryContent');
+        
+        const tinderbtn = document.getElementById('tinder-app');
+        const whatsappbtn = document.getElementById('whatsapp-app');
+        const gallerybtn = document.getElementById('gallery-app');
+        const chatgptbtn = document.getElementById('chatgpt-app');
+
+        // Funciones para cambiar de vista
+        function showAppsMenu() {
+            if (typeof chatgptMessageTimeout !== 'undefined' && chatgptMessageTimeout) clearTimeout(chatgptMessageTimeout);
+            chatgptMessageTimeout = null;
+            appsMenu.style.display = 'flex';
+            tinderView.classList.remove('show');
+            whatsappView.style.display = 'none';
+            galleryView.classList.remove('show');
+            chatgptView.classList.remove('show');
+            document.getElementById('notesView').classList.remove('show');
+            document.getElementById('noteDetailView').classList.remove('show');
+            document.getElementById('jimokingView').classList.remove('show');
+            document.getElementById('burgerDetailView').classList.remove('show');
+        }
+
+        // Datos de perfiles Tinder
+        const tinderProfiles = [
+            {
+                id: 1,
+                name: 'Aitor Jimenez Ovejero',
+                age: 21,
+                image: 'fotos/amorcito.jpg'
+            },
+            {
+                id: 2,
+                name: 'Aitor Jimenez Ovejero',
+                age: 21,
+                image: 'fotos/amorcito5.jpg'
+            },
+            {
+                id: 3,
+                name: 'Aitor Jimenez Ovejero',
+                age: 21,
+                image: 'fotos/amorcito3.jpg'
+            },
+            {
+                id: 4,
+                name: 'Aitor Jimenez Ovejero',
+                age: 21,
+                image: 'fotos/amorcito4.jpg'
+            },
+            {
+                id: 5,
+                name: 'Aitor Jimenez Ovejero',
+                age: 21,
+                image: 'fotos/amorcito6.png'
+            }
+        ];
+
+        let currentTinderIndex = 0;
+        let tinderDragStart = { x: 0, y: 0 };
+        let tinderDragging = false;
+
+        function initTinderCards() {
+            const cardStack = document.getElementById('tinderCardStack');
+            cardStack.innerHTML = '';
+            
+            for (let i = currentTinderIndex; i < Math.min(currentTinderIndex + 3, tinderProfiles.length); i++) {
+                const profile = tinderProfiles[i];
+                const card = document.createElement('div');
+                card.className = 'tinder-card';
+                card.style.backgroundImage = `url('${profile.image}')`;
+                card.style.zIndex = 100 - (i - currentTinderIndex);
+                card.innerHTML = `
+                    <div class="tinder-card-info">
+                        <div class="tinder-card-name">${profile.name}, ${profile.age}</div>
+                        <div class="tinder-card-age">Una persona especial 💙</div>
+                    </div>
+                `;
+                cardStack.appendChild(card);
+                
+                // Eventos de arrastre
+                card.addEventListener('mousedown', tinderMouseDown);
+                card.addEventListener('touchstart', tinderTouchStart);
+            }
+        }
+
+        function tinderMouseDown(e) {
+            if (e.button !== 0) return;
+            tinderDragging = true;
+            tinderDragStart = { x: e.clientX, y: e.clientY };
+            e.target.closest('.tinder-card').classList.add('dragging');
+            document.addEventListener('mousemove', tinderMouseMove);
+            document.addEventListener('mouseup', tinderMouseUp);
+        }
+
+        function tinderMouseMove(e) {
+            if (!tinderDragging) return;
+            const card = document.querySelector('.tinder-card.dragging');
+            if (!card) return;
+            
+            const dx = e.clientX - tinderDragStart.x;
+            const dy = e.clientY - tinderDragStart.y;
+            const rotation = (dx / 100) * 10;
+            
+            card.style.transform = `translateX(${dx}px) translateY(${dy}px) rotate(${rotation}deg)`;
+        }
+
+        function tinderMouseUp(e) {
+            tinderDragging = false;
+            document.removeEventListener('mousemove', tinderMouseMove);
+            document.removeEventListener('mouseup', tinderMouseUp);
+            
+            const card = document.querySelector('.tinder-card.dragging');
+            if (!card) return;
+            
+            const dx = e.clientX - tinderDragStart.x;
+            
+            if (Math.abs(dx) > 80) {
+                if (dx > 0) {
+                    tinderLike();
+                } else {
+                    tinderReject();
+                }
+            } else {
+                card.style.transform = '';
+                card.classList.remove('dragging');
+            }
+        }
+
+        function tinderTouchStart(e) {
+            tinderDragging = true;
+            const touch = e.touches[0];
+            tinderDragStart = { x: touch.clientX, y: touch.clientY };
+            e.target.closest('.tinder-card').classList.add('dragging');
+            document.addEventListener('touchmove', tinderTouchMove);
+            document.addEventListener('touchend', tinderTouchEnd);
+        }
+
+        function tinderTouchMove(e) {
+            if (!tinderDragging) return;
+            const card = document.querySelector('.tinder-card.dragging');
+            if (!card) return;
+            
+            const touch = e.touches[0];
+            const dx = touch.clientX - tinderDragStart.x;
+            const dy = touch.clientY - tinderDragStart.y;
+            const rotation = (dx / 100) * 10;
+            
+            card.style.transform = `translateX(${dx}px) translateY(${dy}px) rotate(${rotation}deg)`;
+        }
+
+        function tinderTouchEnd(e) {
+            tinderDragging = false;
+            document.removeEventListener('touchmove', tinderTouchMove);
+            document.removeEventListener('touchend', tinderTouchEnd);
+            
+            const card = document.querySelector('.tinder-card.dragging');
+            if (!card) return;
+            
+            const touch = e.changedTouches[0];
+            const dx = touch.clientX - tinderDragStart.x;
+            
+            if (Math.abs(dx) > 80) {
+                if (dx > 0) {
+                    tinderLike();
+                } else {
+                    tinderReject();
+                }
+            } else {
+                card.style.transform = '';
+                card.classList.remove('dragging');
+            }
+        }
+
+        function tinderLike() {
+            const card = document.querySelector('.tinder-card');
+            if (!card) return;
+            card.classList.add('like');
+            
+            // Mostrar modal de match dentro de la aplicación
+            const modal = document.getElementById('tinderMatchModal');
+            modal.style.display = 'block';
+            
+            setTimeout(() => {
+                modal.style.display = 'none';
+                currentTinderIndex++;
+                if (currentTinderIndex >= tinderProfiles.length) {
+                    document.getElementById('tinderCardStack').innerHTML = '<div class="tinder-empty">No hay mas perfiles, que mas quieres</div>';
+                } else {
+                    initTinderCards();
+                }
+            }, 2000);
+        }
+
+        function tinderReject() {
+            const card = document.querySelector('.tinder-card');
+            if (!card) return;
+            card.classList.add('reject');
+            setTimeout(() => {
+                currentTinderIndex++;
+                if (currentTinderIndex >= tinderProfiles.length) {
+                    document.getElementById('tinderCardStack').innerHTML = '<div class="tinder-empty">No hay mas perfiles, que mas quieres</div>';
+                } else {
+                    initTinderCards();
+                }
+            }, 600);
+        }
+
+        function showTinder() {
+            appsMenu.style.display = 'none';
+            tinderView.classList.add('show');
+            whatsappView.style.display = 'none';
+            galleryView.classList.remove('show');
+            chatgptView.classList.remove('show');
+            document.getElementById('notesView').classList.remove('show');
+            document.getElementById('noteDetailView').classList.remove('show');
+            document.getElementById('jimokingView').classList.remove('show');
+            document.getElementById('burgerDetailView').classList.remove('show');
+            currentTinderIndex = 0;
+            initTinderCards();
+        }
+
+        function showWhatsApp() {
+            appsMenu.style.display = 'none';
+            tinderView.classList.remove('show');
+            whatsappView.style.display = 'flex';
+            galleryView.classList.remove('show');
+            chatgptView.classList.remove('show');
+            chatListView.style.display = 'block';
+            chatConversation.classList.remove('show');
+        }
+
+        // Estado de la galería del móvil: 'folders' | 'nosotros' | 'amorcito'
+        let mobileGalleryView = 'folders';
+        const mobilePhotosNosotros = ['fotos/FotoN1.png', 'fotos/Foton2.png', 'fotos/Foton3.png', 'fotos/Foton4.png'];
+        const mobilePhotosAmorcito = ['fotos/amorcito.jpg', 'fotos/amorcito1.jpg','fotos/amorcito3.jpg','fotos/amorcito4.jpg','fotos/amorcito5.jpg','fotos/amorcito6.png'];
+
+        function showGalleryFolders() {
+            mobileGalleryView = 'folders';
+            galleryContent.innerHTML = '';
+            galleryContent.classList.add('gallery-folders');
+            const carpetas = [
+                { nombre: 'Nosotros', icono: '👫', fotos: mobilePhotosNosotros },
+                { nombre: 'Amorcito', icono: '💙', fotos: mobilePhotosAmorcito }
+            ];
+            carpetas.forEach(function(c) {
+                const div = document.createElement('div');
+                div.className = 'gallery-carpeta';
+                div.innerHTML = '<div class="gallery-carpeta-icon">' + c.icono + '</div><span class="gallery-carpeta-name">' + c.nombre + '</span>';
+                div.addEventListener('click', function() {
+                    loadMobileGalleryPhotos(c.fotos);
+                    if (c.nombre === 'Nosotros') mobileGalleryView = 'nosotros';
+                    else mobileGalleryView = 'amorcito';
+                });
+                galleryContent.appendChild(div);
+            });
+        }
+
+        function loadMobileGalleryPhotos(photos) {
+            galleryContent.classList.remove('gallery-folders');
+            galleryContent.innerHTML = '';
+            photos.forEach(function(photo, index) {
+                const item = document.createElement('div');
+                item.className = 'gallery-item';
+                item.innerHTML = '<img src="' + photo + '" alt="Foto ' + (index + 1) + '" onerror="this.style.display=\'none\'">';
+                galleryContent.appendChild(item);
+            });
+        }
+
+        function showGallery() {
+            appsMenu.style.display = 'none';
+            tinderView.classList.remove('show');
+            whatsappView.style.display = 'none';
+            galleryView.classList.add('show');
+            chatgptView.classList.remove('show');
+            showGalleryFolders();
+        }
+
+        let chatgptMessageTimeout = null;
+        function showJimoGPT() {
+            if (chatgptMessageTimeout) clearTimeout(chatgptMessageTimeout);
+            appsMenu.style.display = 'none';
+            tinderView.classList.remove('show');
+            whatsappView.style.display = 'none';
+            galleryView.classList.remove('show');
+            chatgptView.classList.add('show');
+            const chatgptContent = document.getElementById('chatgptContent');
+            chatgptContent.innerHTML = '';
+            var msg1 = document.createElement('div');
+            msg1.className = 'chatgpt-message';
+            msg1.textContent = 'Hola soy JimoGPT';
+            chatgptContent.appendChild(msg1);
+            chatgptMessageTimeout = setTimeout(function() {
+                chatgptMessageTimeout = null;
+                var msg2 = document.createElement('div');
+                msg2.className = 'chatgpt-message';
+                msg2.textContent = 'Si sé que me quieres pero aquí vengo a darte un dato curioso, ¿sabes que las japonesas follan como estrellas de mar?';
+                chatgptContent.appendChild(msg2);
+            }, 1000);
+        }
+
+        // Datos de notas
+        const notesData = [
+            {
+                id: 1,
+                title: 'Porque me gusta tanto aitor Jimenez ovejero',
+                content: 'Porque me gusta tanto aitor Jimenez ovejero\n\nEres la persona más especial que he conocido. Tu sonrisa ilumina mis días, tu risa es la mejor música que puedo escuchar, y tu presencia hace que todo sea mejor.\n\nMe encanta tu humor, tu inteligencia, la forma en que me escuchas y cómo te preocupas por mí. Cada momento contigo es un regalo.\n\n❤️'
+            },
+            {
+                id: 2,
+                title: 'Como conquistar a Jimo',
+                content: 'Como conquistar a Jimo\n\n1. Haz que se sienta especial - Porque para ti, lo es\n2. Escúchalo de verdad - Sus pensamientos y sentimientos importan\n3. Sé auténtica - Muestra tu verdadero yo\n4. Sorprende - Los detalles hacen la diferencia\n5. Dale espacio - A veces el ausencia hace crecer el amor\n6. Sonríe - Tu sonrisa es su favorita\n7. Sé paciente - Las cosas buenas toman tiempo\n8. Ama profundamente - Sin miedo ni reservas\n\n💕'
+            },
+            {
+                id: 3,
+                title: 'Dia 14 / 2 / 2026 Proponer cita a aitor',
+                content: 'Dia 14 / 2 / 2026\nProponer cita a aitor\n\nPlan de San Valentín:\n\n💗 Desayuno especial hecho con amor\n💗 Paseo en la naturaleza\n💗 Picnic romántico al atardecer\n💗 Mirar las estrellas juntos\n💗 Decirle todo lo que siente\n\nRecuerda: Lo importante no es el dinero ni los lugares costosos, sino pasar tiempo de calidad juntos y disfrutar de cada momento.\n\n¡Tú puedes! ❤️✨'
+            }
+        ];
+
+        function renderNotesList() {
+            const notesList = document.getElementById('notesList');
+            notesList.innerHTML = '';
+            notesData.forEach(function(note) {
+                const item = document.createElement('div');
+                item.className = 'note-item';
+                item.innerHTML = '<div class="note-item-title">' + note.title + '</div><div class="note-item-preview">' + note.content.substring(0, 60) + '...</div>';
+                item.addEventListener('click', function() {
+                    showNoteDetail(note);
+                });
+                notesList.appendChild(item);
+            });
+        }
+
+        function showNoteDetail(note) {
+            document.getElementById('noteDetailTitle').textContent = note.title;
+            document.getElementById('noteDetailContent').textContent = note.content;
+            document.getElementById('notesView').classList.remove('show');
+            document.getElementById('noteDetailView').classList.add('show');
+        }
+
+        function showNotes() {
+            appsMenu.style.display = 'none';
+            tinderView.classList.remove('show');
+            whatsappView.style.display = 'none';
+            galleryView.classList.remove('show');
+            chatgptView.classList.remove('show');
+            document.getElementById('notesView').classList.add('show');
+            document.getElementById('noteDetailView').classList.remove('show');
+            document.getElementById('jimokingView').classList.remove('show');
+            document.getElementById('burgerDetailView').classList.remove('show');
+            renderNotesList();
+        }
+
+        // Datos de hamburguesas JimoKing
+        const burgersData = [
+            {
+                id: 1,
+                name: 'Jimoburger',
+                emoji: '🍔',
+                description: 'La clásica hamburguesa de Jimo. Pan suave, carne jugosa, lechuga, tomate y salsa especial. ¡Lo mejor de lo mejor!',
+                price: 'GRATIS'
+            },
+            {
+                id: 2,
+                name: 'MaxiJimo',
+                emoji: '🍔',
+                description: 'El gigante de JimoKing. Doble carne, doble queso, bacon crujiente, cebolla caramelizada y salsas premium. ¡Para los que tienen mucho apetito!',
+                price: 'GRATIS'
+            },
+            {
+                id: 3,
+                name: 'JimoDeluxe',
+                emoji: '🍔',
+                description: 'La opción premium. Carne angus de primera calidad, queso suizo derretido, aguacate fresco y mayonesa de trufa. ¡Lujo puro!',
+                price: 'GRATIS'
+            },
+            {
+                id: 4,
+                name: 'Delight Jimo',
+                emoji: '🍧',
+                description: 'La hamburguesa del amor. Hecha con carne de la mejor calidad y condimentada con los besos de tu amor. ¡La más especial!',
+                price: 'GRATIS'
+            }
+        ];
+
+        function renderBurgersList() {
+            const jimokingContent = document.getElementById('jimokingContent');
+            jimokingContent.innerHTML = '';
+            burgersData.forEach(function(burger) {
+                const item = document.createElement('div');
+                item.className = 'burger-item';
+                item.innerHTML = '<div class="burger-item-image">' + burger.emoji + '</div><div class="burger-item-name">' + burger.name + '</div><div class="burger-item-price">' + burger.price + '</div>';
+                item.addEventListener('click', function() {
+                    showBurgerDetail(burger);
+                });
+                jimokingContent.appendChild(item);
+            });
+        }
+
+        function showBurgerDetail(burger) {
+            document.getElementById('burgerDetailTitle').textContent = burger.name;
+            document.getElementById('burgerDetailImage').textContent = burger.emoji;
+            document.getElementById('burgerDetailDesc').textContent = burger.description;
+            document.getElementById('jimokingView').classList.remove('show');
+            document.getElementById('burgerDetailView').classList.add('show');
+        }
+
+        function showJimoKing() {
+            appsMenu.style.display = 'none';
+            tinderView.classList.remove('show');
+            whatsappView.style.display = 'none';
+            galleryView.classList.remove('show');
+            chatgptView.classList.remove('show');
+            document.getElementById('notesView').classList.remove('show');
+            document.getElementById('noteDetailView').classList.remove('show');
+            document.getElementById('jimokingView').classList.add('show');
+            document.getElementById('burgerDetailView').classList.remove('show');
+            renderBurgersList();
+        }
+
+        // Botones para abrir apps
+        tinderbtn.addEventListener('click', showTinder);
+        whatsappbtn.addEventListener('click', showWhatsApp);
+        gallerybtn.addEventListener('click', showGallery);
+        chatgptbtn.addEventListener('click', showJimoGPT);
+        document.getElementById('notes-app').addEventListener('click', showNotes);
+        document.getElementById('jimoking-app').addEventListener('click', showJimoKing);
+
+        // Botones de Tinder
+        document.getElementById('tinderRejectBtn').addEventListener('click', tinderReject);
+        document.getElementById('tinderLikeBtn').addEventListener('click', tinderLike);
+
+        // Botones para volver atrás
+        document.getElementById('backFromTinder').addEventListener('click', showAppsMenu);
+        document.getElementById('backFromWhatsApp').addEventListener('click', showAppsMenu);
+        document.getElementById('backFromGallery').addEventListener('click', function() {
+            if (mobileGalleryView !== 'folders') {
+                showGalleryFolders();
+            } else {
+                showAppsMenu();
+            }
+        });
+        document.getElementById('backFromChatGPT').addEventListener('click', showAppsMenu);
+        document.getElementById('backFromNotes').addEventListener('click', showAppsMenu);
+        document.getElementById('backFromNoteDetail').addEventListener('click', showNotes);
+        document.getElementById('backFromJimoKing').addEventListener('click', showAppsMenu);
+        document.getElementById('backFromBurgerDetail').addEventListener('click', showJimoKing);
+
+        // Botón de pedir hamburguesa
+        document.getElementById('burgerOrderBtn').addEventListener('click', function() {
+            alert('¡Tu pedido ha sido confirmado! 🍔\n\nTu hamburguesa está siendo preparada con amor por el equipo de JimoKing. ¡Buen provecho!');
+            showJimoKing();
+        });
+
+        // Hora real en la barra de estado del móvil
+        function updatePhoneTime() {
+            const el = document.getElementById('phoneTime');
+            if (el) {
+                const now = new Date();
+                el.textContent = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+            }
+        }
+        updatePhoneTime();
+        setInterval(updatePhoneTime, 60000);
+
+        // Mostrar fallback (emoji) si el icono no carga
+        ['tinder', 'whatsapp', 'galeria', 'chatgpt'].forEach(function(name) {
+            var img = document.getElementById('icon-' + name);
+            if (img) {
+                img.addEventListener('error', function() {
+                    this.style.display = 'none';
+                    var next = this.nextElementSibling;
+                    if (next && next.classList.contains('phone-app-icon-fallback')) next.style.display = 'flex';
+                });
+            }
+        });
+
+        // Toggle del móvil
+        mobileToggle.addEventListener('click', function() {
+            mobileScreen.classList.toggle('show');
+            if (mobileScreen.classList.contains('show')) {
+                showAppsMenu();
+            }
+        });
+
+        // Cerrar móvil
+        mobileClose.addEventListener('click', function() {
+            mobileScreen.classList.remove('show');
+        });
+
+        // Abrir chat de Amorcito
+        openChatBtn.addEventListener('click', function() {
+            isChatOpen = true;
+            chatListView.style.display = 'none';
+            chatConversation.classList.add('show');
+            messagesArea.innerHTML = '';
+            messageIndex = 0;
+            chatInput.value = '';
+            document.getElementById('chatInputArea').classList.remove('hidden-when-blocked');
+            document.getElementById('chatBlockedNotice').classList.remove('show');
+            // Enviar primer mensaje automático después de un tiempo
+            setTimeout(() => {
+                sendAutoMessage();
+            }, 1500);
+        });
+
+        // Volver a la lista de chats
+        backBtn.addEventListener('click', function() {
+            isChatOpen = false;
+            chatConversation.classList.remove('show');
+            chatListView.style.display = 'block';
+        });
+
+        // Enviar mensaje
+        sendBtn.addEventListener('click', sendUserMessage);
+        chatInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendUserMessage();
+            }
+        });
+
+        function sendUserMessage() {
+            const message = chatInput.value.trim();
+            if (message === '') return;
+
+            // Mostrar mensaje enviado
+            addMessage(message, 'sent');
+            chatInput.value = '';
+
+            // Recibir mensaje automático después de un tiempo
+            setTimeout(() => {
+                sendAutoMessage();
+            }, 1000);
+        }
+
+        function sendAutoMessage() {
+            if (messageIndex < autoMessages.length) {
+                const message = autoMessages[messageIndex];
+                addMessage(message, 'received');
+                messageIndex++;
+            } else {
+                addMessage('Este usuario te ha bloqueado', 'blocked');
+                document.getElementById('chatInputArea').classList.add('hidden-when-blocked');
+                document.getElementById('chatBlockedNotice').classList.add('show');
+            }
+        }
+
+        function addMessage(text, type) {
+            const messageEl = document.createElement('div');
+            messageEl.classList.add('message', type);
+            messageEl.textContent = text;
+            messagesArea.appendChild(messageEl);
+            
+            // Scroll al último mensaje
+            messagesArea.scrollTop = messagesArea.scrollHeight;
+        }
+
+        // Array de fotos para la galería
+        // Cambia estos nombres por tus fotos
+        const galleryPhotos = [
+            'fotos/Foton1.png',
+            'fotos/Foton2.png',
+            'fotos/Foton3.png',
+            'fotos/Foton4.png'
+        ];
+
+        let currentPhotoIndex = 0;
+
+        // Actualizar total de fotos
+        totalPhotosSpan.textContent = galleryPhotos.length;
+
+        // El botón de NO se escapa
+        noBtn.addEventListener('mouseover', function() {
+            const randomX = Math.random() * 300 - 150;
+            const randomY = Math.random() * 300 - 150;
+            noBtn.style.transform = `translate(${randomX}px, ${randomY}px)`;
+        });
+
+        // El botón de NO también se escapa si intentan clickear
+        noBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const randomX = Math.random() * 300 - 150;
+            const randomY = Math.random() * 300 - 150;
+            noBtn.style.transform = `translate(${randomX}px, ${randomY}px)`;
+        });
+
+        // Pistas y elemento de audio para la música
+        const musicTracks = [
+            {
+                src: 'fotos/musica3.mp3',
+                title: 'Soy Messi el de los Goles'
+            },
+            {
+                src: 'fotos/musica2.mp3',
+                title: 'Movimiento Naranja'
+            },
+            {
+                src: 'fotos/musica.mp3',
+                title: 'Los Burlaos X Better Off Alone'
+            },
+
+        ];
+        let musicTrackIndex = 0;
+        const backgroundMusic = new Audio();
+        backgroundMusic.volume = 0.5;
+        backgroundMusic.loop = true;
+
+        function loadMusicTrack(index) {
+            if (!musicTracks.length) return;
+            musicTrackIndex = (index + musicTracks.length) % musicTracks.length;
+            const track = musicTracks[musicTrackIndex];
+            if (backgroundMusic.src !== track.src) {
+                backgroundMusic.src = track.src;
+            }
+            const titleEl = document.getElementById('musicTitle');
+            if (titleEl) titleEl.textContent = track.title;
+        }
+        loadMusicTrack(0);
+
+        // Controles del menú de música
+        const musicMenu = document.getElementById('musicMenu');
+        const musicProgress = document.getElementById('musicProgress');
+        const musicPrev = document.getElementById('musicPrev');
+        const musicPlayPause = document.getElementById('musicPlayPause');
+        const musicNext = document.getElementById('musicNext');
+
+        if (musicProgress) {
+            backgroundMusic.addEventListener('timeupdate', function() {
+                if (!backgroundMusic.duration || isNaN(backgroundMusic.duration)) return;
+                musicProgress.value = (backgroundMusic.currentTime / backgroundMusic.duration) * 100;
+            });
+            musicProgress.addEventListener('input', function() {
+                if (!backgroundMusic.duration || isNaN(backgroundMusic.duration)) return;
+                const pct = Number(this.value) / 100;
+                backgroundMusic.currentTime = pct * backgroundMusic.duration;
+            });
+        }
+
+        backgroundMusic.addEventListener('play', function() {
+            if (musicMenu) musicMenu.classList.add('playing');
+            if (musicPlayPause) musicPlayPause.textContent = '⏸';
+        });
+        backgroundMusic.addEventListener('pause', function() {
+            if (musicMenu) musicMenu.classList.remove('playing');
+            if (musicPlayPause) musicPlayPause.textContent = '▶';
+        });
+
+        function changeTrack(delta) {
+            if (!musicTracks.length) return;
+            const wasPlaying = !backgroundMusic.paused;
+            loadMusicTrack(musicTrackIndex + delta);
+            if (wasPlaying) {
+                backgroundMusic.currentTime = 0;
+                backgroundMusic.play().catch(function(err) {
+                    console.log('No se pudo cambiar la canción:', err);
+                });
+            } else {
+                backgroundMusic.currentTime = 0;
+            }
+        }
+        if (musicPrev) {
+            musicPrev.addEventListener('click', function() {
+                changeTrack(-1);
+            });
+        }
+        if (musicNext) {
+            musicNext.addEventListener('click', function() {
+                changeTrack(1);
+            });
+        }
+
+        // Play/Pause button
+        if (musicPlayPause) {
+            musicPlayPause.addEventListener('click', function() {
+                if (backgroundMusic.paused) {
+                    backgroundMusic.play();
+                } else {
+                    backgroundMusic.pause();
+                }
+            });
+        }
+
+        // El botón de SÍ hace algo romántico
+        const adPopup = document.getElementById('adPopup');
+        siBtn.addEventListener('click', function() {
+            if (adPopup) {
+                setTimeout(function() {
+                    adPopup.classList.add('show');
+                    setTimeout(function() {
+                        adPopup.classList.remove('show');
+                    }, 7000);
+                }, 5000);
+            }
+
+            // Crear lluvia de rosas y corazones
+            createFallingRoses();
+            createHearts();
+
+            // Sonido romántico
+            playHeartSound();
+
+            // Reproducir música de fondo y mostrar menú de música
+            backgroundMusic.play().then(function() {
+                if (musicMenu) musicMenu.classList.add('show');
+            }).catch(err => {
+                console.log('No se pudo reproducir la música:', err);
+                if (musicMenu) musicMenu.classList.add('show');
+            });
+
+            // Ocultar contenedor principal
+            mainContainer.style.opacity = '0';
+            mainContainer.style.pointerEvents = 'none';
+            mainContainer.style.transition = 'all 0.5s ease';
+
+            // Mostrar pantalla de éxito
+            setTimeout(() => {
+                successScreen.classList.add('show');
+            }, 300);
+        });
+
+        // Botón para abrir galería
+        historyBtn.addEventListener('click', function() {
+            successScreen.classList.remove('show');
+            setTimeout(() => {
+                galleryScreen.classList.add('show');
+                displayPhoto(0);
+            }, 300);
+        });
+
+        // Modal 4 dígitos (Presiona aquí → flores.html con contraseña 2026)
+        const presionaAquiBtn = document.getElementById('presionaAquiBtn');
+        const pinOverlay = document.getElementById('pinOverlay');
+        const pinModal = document.getElementById('pinModal');
+        const pinDigits = [document.getElementById('pin0'), document.getElementById('pin1'), document.getElementById('pin2'), document.getElementById('pin3')];
+        const pinError = document.getElementById('pinError');
+        const pinSubmit = document.getElementById('pinSubmit');
+        const PIN_SECRET = '2026';
+
+        if (presionaAquiBtn) {
+            presionaAquiBtn.addEventListener('click', function() {
+                pinOverlay.classList.add('show');
+                pinModal.classList.add('show');
+                pinError.textContent = '';
+                pinDigits.forEach(function(inp) { inp.value = ''; });
+                pinDigits[0].focus();
+            });
+        }
+        if (pinOverlay) {
+            pinOverlay.addEventListener('click', function() {
+                pinOverlay.classList.remove('show');
+                pinModal.classList.remove('show');
+            });
+        }
+        pinDigits.forEach(function(inp, i) {
+            inp.addEventListener('input', function() {
+                this.value = this.value.replace(/\D/g, '').slice(0, 1);
+                if (this.value.length === 1 && i < 3) pinDigits[i + 1].focus();
+            });
+            inp.addEventListener('keydown', function(e) {
+                if (e.key === 'Backspace' && !this.value && i > 0) pinDigits[i - 1].focus();
+                if (e.key === 'Enter') checkPin();
+            });
+        });
+        function getPinValue() {
+            return pinDigits.map(function(d) { return d.value; }).join('');
+        }
+        function checkPin() {
+            if (getPinValue() === PIN_SECRET) {
+                window.location.href = 'flores.html';
+            } else {
+                pinError.textContent = 'Código incorrecto';
+            }
+        }
+        if (pinSubmit) pinSubmit.addEventListener('click', checkPin);
+        pinModal.addEventListener('click', function(e) { e.stopPropagation(); });
+
+        // Navegación de galería
+        prevBtn.addEventListener('click', function() {
+            currentPhotoIndex = (currentPhotoIndex - 1 + galleryPhotos.length) % galleryPhotos.length;
+            displayPhoto(currentPhotoIndex);
+        });
+
+        nextBtn.addEventListener('click', function() {
+            currentPhotoIndex = (currentPhotoIndex + 1) % galleryPhotos.length;
+            displayPhoto(currentPhotoIndex);
+        });
+
+        // Función para mostrar foto
+        function displayPhoto(index) {
+            galleryImage.style.backgroundImage = `url('${galleryPhotos[index]}')`;
+            currentPhotoSpan.textContent = index + 1;
+        }
+
+        // Función para crear rosas que caen
+        function createFallingRoses() {
+            const roses = ['🌹', '🌷', '💐'];
+            for (let i = 0; i < 15; i++) {
+                setTimeout(() => {
+                    const rose = document.createElement('div');
+                    rose.classList.add('rose-animation');
+                    rose.textContent = roses[Math.floor(Math.random() * roses.length)];
+                    rose.style.left = Math.random() * 100 + '%';
+                    document.body.appendChild(rose);
+
+                    setTimeout(() => {
+                        rose.remove();
+                    }, 4000);
+                }, i * 150);
+            }
+        }
+
+        // Función para crear corazones que caen
+        function createHearts() {
+            let heartCount = 0;
+            const heartInterval = setInterval(() => {
+                const heart = document.createElement('div');
+                heart.classList.add('heart');
+                heart.textContent = '❤️';
+                heart.style.left = Math.random() * 100 + '%';
+                document.body.appendChild(heart);
+
+                heartCount++;
+                if (heartCount > 20) {
+                    clearInterval(heartInterval);
+                }
+
+                setTimeout(() => {
+                    heart.remove();
+                }, 3000);
+            }, 100);
+        }
+
+        // Función para reproducir sonido romántico
+        function playHeartSound() {
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const notes = [523.25, 659.25, 783.99]; // Notas musicales
+                
+                notes.forEach((freq, index) => {
+                    setTimeout(() => {
+                        const oscillator = audioContext.createOscillator();
+                        const gainNode = audioContext.createGain();
+                        
+                        oscillator.connect(gainNode);
+                        gainNode.connect(audioContext.destination);
+                        
+                        oscillator.frequency.value = freq;
+                        oscillator.type = 'sine';
+                        
+                        gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                        
+                        oscillator.start(audioContext.currentTime);
+                        oscillator.stop(audioContext.currentTime + 0.3);
+                    }, index * 200);
+                });
+            } catch (e) {
+                console.log('Audio no disponible');
+            }
+        }
+
+        // Cargar foto principal
+        window.addEventListener('load', () => {
+            document.getElementById('successPhoto').style.backgroundImage = `url('fotos/nosotres.png')`;
+        });
+
+        // Funciones del juego
+        function startGame() {
+            gameRunning = true;
+            mainContainer.style.display = 'none';
+            gameScreen.classList.add('show');
+            score = 0;
+            playerY = 0;
+            playerVelocity = 0;
+            isJumping = false;
+            gameScore.textContent = '0';
+            gameOver.classList.remove('show');
+            
+            // Limpiar obstáculos previos
+            document.querySelectorAll('.obstacle').forEach(obs => obs.remove());
+            
+            // Posicionar player en el suelo
+            player.style.bottom = '65px';
+            
+            // Iniciar bucle del juego
+            if (gameLoopId) cancelAnimationFrame(gameLoopId);
+            gameLoop();
+            
+            // Crear obstáculos después de 2 segundos
+            setTimeout(() => {
+                if (gameRunning) {
+                    createObstacles();
+                }
+            }, 2000);
+        }
+
+        function gameLoop() {
+            if (!gameRunning) return;
+
+            // Física del jugador
+            playerVelocity += gravity;
+            playerY -= playerVelocity;
+
+            // Límites del terreno (no puede caer más abajo de 0)
+            if (playerY <= 0) {
+                playerY = 0;
+                playerVelocity = 0;
+                isJumping = false;
+            }
+
+            player.style.bottom = (65 + playerY) + 'px';
+
+            // Verificar colisiones
+            const obstacles = document.querySelectorAll('.obstacle');
+            obstacles.forEach(obstacle => {
+                const obstacleRect = obstacle.getBoundingClientRect();
+                const playerRect = player.getBoundingClientRect();
+
+                if (
+                    playerRect.left < obstacleRect.right &&
+                    playerRect.right > obstacleRect.left &&
+                    playerRect.top < obstacleRect.bottom &&
+                    playerRect.bottom > obstacleRect.top
+                ) {
+                    endGame();
+                    return;
+                }
+            });
+
+            gameLoopId = requestAnimationFrame(gameLoop);
+        }
+
+        function createObstacles() {
+            if (!gameRunning) return;
+
+            const gameContainer = document.querySelector('.game-container');
+            const obstacle = document.createElement('div');
+            obstacle.classList.add('obstacle');
+            gameContainer.appendChild(obstacle);
+
+            let obstacleX = gameContainer.offsetWidth;
+            const speed = 7;
+            let obstacleCollected = false;
+
+            const moveInterval = setInterval(() => {
+                if (!gameRunning) {
+                    clearInterval(moveInterval);
+                    return;
+                }
+
+                obstacleX -= speed;
+                obstacle.style.right = (gameContainer.offsetWidth - obstacleX) + 'px';
+
+                if (obstacleX < -50 && !obstacleCollected) {
+                    obstacleCollected = true;
+                    score += 10;
+                    gameScore.textContent = score;
+                }
+
+                if (obstacleX < -50) {
+                    clearInterval(moveInterval);
+                    obstacle.remove();
+                }
+            }, 30);
+
+            // Crear siguiente obstáculo
+            setTimeout(() => {
+                if (gameRunning) {
+                    createObstacles();
+                }
+            }, Math.random() * 1200 + 800);
+        }
+
+        function endGame() {
+            gameRunning = false;
+            if (gameLoopId) cancelAnimationFrame(gameLoopId);
+            
+            // Reproducir sonido de muerte
+            try {
+                deathSound.currentTime = 0;
+                deathSound.play().catch(e => console.log('Error sonido muerte:', e));
+            } catch (e) {
+                console.log('Error:', e);
+            }
+            
+            finalScore.textContent = score;
+            gameOver.classList.add('show');
+        }
+
+        // Controles del juego
+        document.addEventListener('keydown', function(e) {
+            if (e.code === 'Space' && gameRunning && !isJumping && playerY <= 1) {
+                isJumping = true;
+                playerVelocity = -jumpPower;
+                
+                // Reproducir sonido de salto
+                try {
+                    jumpSound.currentTime = 0;
+                    jumpSound.play().catch(err => console.log('Error sonido salto:', err));
+                } catch (err) {
+                    console.log('Error:', err);
+                }
+                
+                e.preventDefault();
+            }
+        });
+
+        restartBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            gameRunning = false;
+            if (gameLoopId) cancelAnimationFrame(gameLoopId);
+            document.querySelectorAll('.obstacle').forEach(obs => obs.remove());
+            startGame();
+        });
+
+        // Volver a la página anterior desde el juego
+        document.getElementById('backFromGameBtn').addEventListener('click', function() {
+            gameRunning = false;
+            if (gameLoopId) cancelAnimationFrame(gameLoopId);
+            document.querySelectorAll('.obstacle').forEach(obs => obs.remove());
+            gameScreen.classList.remove('show');
+            mainContainer.style.display = '';
+        });
+
+        // Detener juego si se responde
+        siBtn.addEventListener('click', function() {
+            // Cancelar el timeout del juego para que no aparezca
+            if (gameTimeout) clearTimeout(gameTimeout);
+            
+            gameRunning = false;
+            if (gameLoopId) cancelAnimationFrame(gameLoopId);
+            document.querySelectorAll('.obstacle').forEach(obs => obs.remove());
+            if (gameScreen.classList.contains('show')) {
+                gameScreen.classList.remove('show');
+            }
+        });
+
+        noBtn.addEventListener('click', function() {
+            gameRunning = false;
+            if (gameLoopId) cancelAnimationFrame(gameLoopId);
+            clearTimeout(gameTimeout);
+            document.querySelectorAll('.obstacle').forEach(obs => obs.remove());
+        });
+    </script>
+</body>
+</html>
